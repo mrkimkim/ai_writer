@@ -149,12 +149,13 @@
   border-radius: 4px;
   width: 80%;
   font-weight: bold;
+  margin-top: 16px;
   background: rgba(128, 128, 128, 0.2);
 }
 
 .main .result {
   font-weight: bold;
-  margin-top: 20px;
+  margin-top: 0px;
   width: 80%;
 }
 

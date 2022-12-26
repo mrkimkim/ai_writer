@@ -6,7 +6,7 @@
       <change afterPath="$PROJECT_DIR$/public/edit.png" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/public/internet.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.env.example" beforeDir="false" afterPath="$PROJECT_DIR$/.env.example" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pages/api/generate.js" beforeDir="false" afterPath="$PROJECT_DIR$/pages/api/generate.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pages/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/pages/index.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pages/index.module.css" beforeDir="false" afterPath="$PROJECT_DIR$/pages/index.module.css" afterDir="false" />
@@ -58,7 +58,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1671848064494</updated>
-      <workItem from="1671848067062" duration="49476000" />
+      <workItem from="1671848067062" duration="50214000" />
     </task>
     <servers />
   </component>
