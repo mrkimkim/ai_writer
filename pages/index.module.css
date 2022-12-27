@@ -61,6 +61,13 @@
   text-align: center;
 }
 
+.main .subtitle {
+  margin-bottom: 16px;
+  text-align: center;
+  width: 80%;
+  font-weight: bold;
+}
+
 .main .copyBtn {
   display: flow-root;
   margin-top: 8px;

@@ -12,6 +12,7 @@ const PROMPT_STRING_LENGTH_LIMIT = {
 const UI_STRING_BY_LANGUAGE = {
     "한국어": {
         appTitle: "유령 작가 스토리",
+        subtitle: "10줄을 번갈아가며 유령 작가와 짧은 소설을 완성해보세요.",
         sentenceInputHint: " /10번째 문장)",
         submitBtnText: "입력",
         languageToggleText: "English Mode",
@@ -26,6 +27,7 @@ const UI_STRING_BY_LANGUAGE = {
     },
     "English": {
         appTitle: "Writing a novel with Ghost Writer",
+        subtitle: "You have to finish a short novel with ghost writer in 10 attempts",
         sentenceInputHint: " of 10 sentence)",
         submitBtnText: "Enter",
         languageToggleText: "한국어 모드",
@@ -126,6 +128,7 @@ export default function Home() {
     const [submitEnabled, setSubmitEnabled] = useState(true);
     const [languageSetting, setLanguageSetting] = useState("English")
     const [appTitle, setAppTitle] = useState(UI_STRING_BY_LANGUAGE[languageSetting].appTitle)
+    const [subtitle, setSubtitle] = useState(UI_STRING_BY_LANGUAGE[languageSetting].subtitle)
     const [languageToggleText, setLanguageToggleText] = useState(UI_STRING_BY_LANGUAGE[languageSetting].languageToggleText)
     const [sentenceInputHint, setSentenceInputHint] = useState("(1" + UI_STRING_BY_LANGUAGE[languageSetting].sentenceInputHint)
     const [submitBtnText, setSubmitBtnText] = useState(UI_STRING_BY_LANGUAGE[languageSetting].submitBtnText)
@@ -147,7 +150,8 @@ export default function Home() {
     }, [result]);
 
     useEffect(() => {
-        setAppTitle(UI_STRING_BY_LANGUAGE[languageSetting].appTitle);
+        setAppTitle(UI_STRING_BY_LANGUAGE[languageSetting].appTitle)
+        setSubtitle(UI_STRING_BY_LANGUAGE[languageSetting].subtitle)
         setSentenceInputHint("(" + round + UI_STRING_BY_LANGUAGE[languageSetting].sentenceInputHint);
         setSubmitBtnText(UI_STRING_BY_LANGUAGE[languageSetting].submitBtnText);
         setLanguageToggleText(UI_STRING_BY_LANGUAGE[languageSetting].languageToggleText);
@@ -283,6 +287,7 @@ export default function Home() {
             </div>
             <img src="/edit.png" className={styles.icon}/>
             <h3>{appTitle}</h3>
+            <div className={styles.subtitle}>{subtitle}</div>
             <input className={styles.apiKeyInput} type="text" name="api_key" placeholder={howToGetAPIKeyHint}
                    onChange={(e) => setAPIKey(e.target.value)}/>
             <a href="https://beta.openai.com/account/api-keys" target="_blank">{howToGetAPIKey}</a>
