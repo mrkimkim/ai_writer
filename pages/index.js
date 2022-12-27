@@ -2,37 +2,41 @@ import Head from "next/head";
 import {useEffect, useRef, useState} from "react";
 import styles from "./index.module.css";
 
+const ROUND_LIMIT = 10;
+
 const PROMPT_STRING_LENGTH_LIMIT = {
-    "한국어": 80,
-    "English": 120,
+    "한국어": 128,
+    "English": 128,
 }
 
 const UI_STRING_BY_LANGUAGE = {
     "한국어": {
         appTitle: "유령 작가 스토리",
-        sentenceInputHint: "당신이 입력할 차례입니다! 80자 이하로 입력해주세요.",
+        sentenceInputHint: " /10번째 문장)",
         submitBtnText: "입력",
         languageToggleText: "English Mode",
-        invalidSentenceAlertText: "문장에 오류가 있습니다. 유효한 문장을 입력해주세요. 유효한 문장의 길이는 4~80자 입니다.",
+        invalidSentenceAlertText: "문장에 오류가 있습니다. 유효한 문장을 입력해주세요. 유효한 문장의 길이는 4~128자 입니다.",
         humanSpeakerText: "당신",
         aiSpeakerText: "유령 작가",
         languageToggleConfirmationText: "사용 언어를 변경합니다. 현재 작성 중이 모든 내용이 초기화됩니다.",
         copyBtnText: "복사하기",
         howToGetAPIKey: "API 키를 얻는 방법",
         howToGetAPIKeyHint: "OpenAI API Key를 입력하세요",
+        roundFinishText: "소설이 완성되었습니다. 스크롤을 올려 결과를 확인해보세요!",
     },
     "English": {
         appTitle: "Writing a novel with Ghost Writer",
-        sentenceInputHint: "It's your turn! Enter sentence (4-120 length)",
+        sentenceInputHint: " of 10 sentence)",
         submitBtnText: "Enter",
         languageToggleText: "한국어 모드",
-        invalidSentenceAlertText: "This sentence is invalid. Please input a valid sentence (4~120 length).",
+        invalidSentenceAlertText: "This sentence is invalid. Please input a valid sentence (4~128 length).",
         humanSpeakerText: "You",
         aiSpeakerText: "Ghost Writer",
         languageToggleConfirmationText: "Switch to the different language. Note that your current sentences will be deleted.",
         copyBtnText: "Copy Text",
         howToGetAPIKey: "Get OpenAI API Key",
         howToGetAPIKeyHint: "Paste OpenAI API Key",
+        roundFinishText: "Your novel is finished! Scroll up and check the result!",
     }
 }
 
@@ -63,7 +67,7 @@ function addNewMessage(speaker, message) {
 }
 
 function generatePromptSentences() {
-    const MAX_LENGTH = 600;
+    const MAX_LENGTH = 300;
     // Count the number of characters
     let character_count = 0;
     sentences.forEach(s => character_count += s.length)
@@ -78,12 +82,12 @@ function generatePromptSentences() {
 
 function renderHumanMessage(language, message) {
     const speaker = UI_STRING_BY_LANGUAGE[language].humanSpeakerText;
-    return <div className={styles.humanMessage} key={speaker | message}>({speaker}) {message}</div>
+    return <div className={styles.humanMessage} key={speaker | message}>{message}</div>
 }
 
 function renderAIMessage(language, message) {
     const speaker = UI_STRING_BY_LANGUAGE[language].aiSpeakerText;
-    return <div className={styles.aiMessage} key={speaker | message}>({speaker}) {message}</div>
+    return <div className={styles.aiMessage} key={speaker | message}>{message}</div>
 }
 
 function renderConversation(language) {
@@ -123,7 +127,7 @@ export default function Home() {
     const [languageSetting, setLanguageSetting] = useState("English")
     const [appTitle, setAppTitle] = useState(UI_STRING_BY_LANGUAGE[languageSetting].appTitle)
     const [languageToggleText, setLanguageToggleText] = useState(UI_STRING_BY_LANGUAGE[languageSetting].languageToggleText)
-    const [sentenceInputHint, setSentenceInputHint] = useState(UI_STRING_BY_LANGUAGE[languageSetting].sentenceInputHint)
+    const [sentenceInputHint, setSentenceInputHint] = useState("(1" + UI_STRING_BY_LANGUAGE[languageSetting].sentenceInputHint)
     const [submitBtnText, setSubmitBtnText] = useState(UI_STRING_BY_LANGUAGE[languageSetting].submitBtnText)
     const [copyBtnText, setCopyBtnText] = useState(UI_STRING_BY_LANGUAGE[languageSetting].copyBtnText)
     const [wholeStory, setWholeStory] = useState("")
@@ -131,6 +135,7 @@ export default function Home() {
     const [apiKey, setAPIKey] = useState("");
     const [howToGetAPIKey, setHowToGetAPIKey] = useState(UI_STRING_BY_LANGUAGE[languageSetting].howToGetAPIKey);
     const [howToGetAPIKeyHint, setHowToGetAPIKeyHint] = useState(UI_STRING_BY_LANGUAGE[languageSetting].howToGetAPIKeyHint);
+    const [round, setRound] = useState(1);
 
     const pageEndRef = useRef();
     const scrollToBottom = () => {
@@ -143,7 +148,7 @@ export default function Home() {
 
     useEffect(() => {
         setAppTitle(UI_STRING_BY_LANGUAGE[languageSetting].appTitle);
-        setSentenceInputHint(UI_STRING_BY_LANGUAGE[languageSetting].sentenceInputHint);
+        setSentenceInputHint("(" + round + UI_STRING_BY_LANGUAGE[languageSetting].sentenceInputHint);
         setSubmitBtnText(UI_STRING_BY_LANGUAGE[languageSetting].submitBtnText);
         setLanguageToggleText(UI_STRING_BY_LANGUAGE[languageSetting].languageToggleText);
         setCopyBtnText(UI_STRING_BY_LANGUAGE[languageSetting].copyBtnText);
@@ -169,6 +174,7 @@ export default function Home() {
         message_list = [];
         setWholeStory("");
         setDebugString("");
+        setRound(1);
 
         if (languageSetting === "English") {
             setLanguageSetting("한국어");
@@ -179,6 +185,13 @@ export default function Home() {
 
     async function onSubmit(event, retry = 0) {
         event.preventDefault();
+
+        // Check if it's already done
+        if (round > ROUND_LIMIT) {
+            alert(UI_STRING_BY_LANGUAGE[languageSetting].roundFinishText);
+            return;
+        }
+
         try {
             if (isInvalidInput(sentenceInput, PROMPT_STRING_LENGTH_LIMIT[languageSetting])) {
                 alert(UI_STRING_BY_LANGUAGE[languageSetting].invalidSentenceAlertText);
@@ -203,9 +216,11 @@ export default function Home() {
             }
 
             const response = await fetch("/api/generate", {
-                method: "POST", headers: {
+                method: "POST",
+                headers: {
                     "Content-Type": "application/json",
-                }, body: JSON.stringify({sentence: generatePromptSentences(), language: languageSetting, apiKey: apiKey}),
+                },
+                body: JSON.stringify({sentence: generatePromptSentences(), language: languageSetting, apiKey: apiKey}),
             });
 
             const data = await response.json();
@@ -225,7 +240,15 @@ export default function Home() {
             addNewMessage("AI", refineResponseText(data.result.choices[0].text));
             setWholeStory(getWholeStory());
             setResult(renderConversation(languageSetting));
-            setSubmitEnabled(true);
+
+            if (round >= ROUND_LIMIT) {
+                alert(UI_STRING_BY_LANGUAGE[languageSetting].roundFinishText);
+                setSubmitEnabled(false);
+            } else {
+                setSubmitEnabled(true);
+            }
+
+            setRound(round + 1);
 
         } catch (error) {
             // Consider implementing your own error handling logic here
@@ -240,12 +263,15 @@ export default function Home() {
             <link rel="icon" href="/edit.png"/>
         </Head>
         <div className={styles.appreciation}>
-            <a href="https://www.flaticon.com/free-icons/quill-pen" title="quill pen icons" target="_blank">Quill pen icons created by
+            <a href="https://www.flaticon.com/free-icons/quill-pen" title="quill pen icons" target="_blank">Quill pen
+                icons created by
                 Dmytro Vyshnevskyi - Flaticon</a>
-            <a href="https://www.flaticon.com/free-icons/language" title="language icons" target="_blank">Language icons created by
+            <a href="https://www.flaticon.com/free-icons/language" title="language icons" target="_blank">Language icons
+                created by
                 Anthony
                 Ledoux - Flaticon</a>
-            <a href="https://www.flaticon.com/free-icons/paper" title="paper icons" target="_blank">Paper icons created by Gregor
+            <a href="https://www.flaticon.com/free-icons/paper" title="paper icons" target="_blank">Paper icons created
+                by Gregor
                 Cresnar - Flaticon</a>
         </div>
         <main className={styles.main}>
@@ -257,7 +283,8 @@ export default function Home() {
             </div>
             <img src="/edit.png" className={styles.icon}/>
             <h3>{appTitle}</h3>
-            <input className={styles.apiKeyInput} type="text" name="api_key" placeholder={howToGetAPIKeyHint} onChange={(e) => setAPIKey(e.target.value)}/>
+            <input className={styles.apiKeyInput} type="text" name="api_key" placeholder={howToGetAPIKeyHint}
+                   onChange={(e) => setAPIKey(e.target.value)}/>
             <a href="https://beta.openai.com/account/api-keys" target="_blank">{howToGetAPIKey}</a>
             <div hidden={wholeStory.length == 0} className={styles.wholeStory}>{wholeStory}
                 <button className={styles.copyBtn} onClick={onClickCopy}>
