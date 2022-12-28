@@ -23,7 +23,7 @@ export default async function (req, res) {
     const completion = await openai.createCompletion({
       model: "text-davinci-003",
       prompt: generatePrompt(escapeString(req.body.sentence)),
-      temperature: 0.7,
+      temperature: 0.85,
       max_tokens: 300,
     });
     completion.data.prompt = generatePrompt(escapeString(req.body.sentence), req.body.languageSetting);

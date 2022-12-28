@@ -1,6 +1,7 @@
 import Head from "next/head";
 import {useEffect, useRef, useState} from "react";
 import styles from "./index.module.css";
+import { Analytics } from '@vercel/analytics/react';
 
 const ROUND_LIMIT = 10;
 
@@ -279,6 +280,7 @@ export default function Home() {
                 Cresnar - Flaticon</a>
         </div>
         <main className={styles.main}>
+            <Analytics/>
             <div className={styles.languageSelectorContainer}>
                 <button className={styles.languageSelector} onClick={onClickLanguage}>
                     <span className={styles.languageSelectorIcon}><img src="internet.png"/></span>
